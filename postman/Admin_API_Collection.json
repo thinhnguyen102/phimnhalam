@@ -1,0 +1,1762 @@
+{
+  "info": {
+    "name": "AI Movie Backend - Admin APIs",
+    "description": "Collection of admin APIs for AI Movie Backend system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Dashboard & Statistics",
+      "item": [
+        {
+          "name": "Get Admin Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/dashboard",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "dashboard"]
+            }
+          }
+        },
+        {
+          "name": "Get Admin Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Get Monthly Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/stats/monthly/2024",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "stats", "monthly", "2024"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User Management",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users"],
+              "query": [
+                {"key": "page", "value": "0"},
+                {"key": "size", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update User Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/1/status?enabled=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users", "1", "status"],
+              "query": [{"key": "enabled", "value": "true"}]
+            }
+          }
+        },
+        {
+          "name": "Update User Roles",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\"USER\", \"MODERATOR\"]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/1/roles",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users", "1", "roles"]
+            }
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users", "1"]
+            }
+          }
+        },
+        {
+          "name": "Bulk Disable Users",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[1, 2, 3]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/bulk-disable?reason=Policy violation",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users", "bulk-disable"],
+              "query": [{"key": "reason", "value": "Policy violation"}]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Movie Management",
+      "item": [
+        {
+          "name": "Get All Movies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/movies?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "movies"],
+              "query": [
+                {"key": "page", "value": "0"},
+                {"key": "size", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Movie by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/movies/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "movies", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Movie",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Sample Movie",
+                  "type": "text"
+                },
+                {
+                  "key": "synopsis",
+                  "value": "Movie description",
+                  "type": "text"
+                },
+                {
+                  "key": "year",
+                  "value": "2024",
+                  "type": "text"
+                },
+                {
+                  "key": "poster",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "thumbnail",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "video",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "trailer",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "actors",
+                  "value": "Tom Hanks,Leonardo DiCaprio",
+                  "type": "text"
+                },
+                {
+                  "key": "categories",
+                  "value": "Action,Drama",
+                  "type": "text"
+                },
+                {
+                  "key": "directors",
+                  "value": "Christopher Nolan",
+                  "type": "text"
+                },
+                {
+                  "key": "country",
+                  "value": "United States",
+                  "type": "text"
+                },
+                {
+                  "key": "language",
+                  "value": "English",
+                  "type": "text"
+                },
+                {
+                  "key": "isAvailable",
+                  "value": "true",
+                  "type": "text"
+                },
+                {
+                  "key": "ageRating",
+                  "value": "PG-13",
+                  "type": "text"
+                },
+                {
+                  "key": "imdbRating",
+                  "value": "8.5",
+                  "type": "text"
+                },
+                {
+                  "key": "isFeatured",
+                  "value": "true",
+                  "type": "text"
+                },
+                {
+                  "key": "isTrending",
+                  "value": "false",
+                  "type": "text"
+                },
+                {
+                  "key": "releaseDate",
+                  "value": "2024-01-15",
+                  "type": "text"
+                },
+                {
+                  "key": "downloadEnabled",
+                  "value": "true",
+                  "type": "text"
+                },
+                {
+                  "key": "maxDownloadQuality",
+                  "value": "1080p",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/movies",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "movies"]
+            }
+          }
+        },
+        {
+          "name": "Update Movie",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Updated Movie Title",
+                  "type": "text"
+                },
+                {
+                  "key": "synopsis",
+                  "value": "Updated description",
+                  "type": "text"
+                },
+                {
+                  "key": "year",
+                  "value": "2024",
+                  "type": "text"
+                },
+                {
+                  "key": "poster",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "thumbnail",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "video",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "trailer",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "actors",
+                  "value": "Tom Hanks,Leonardo DiCaprio",
+                  "type": "text"
+                },
+                {
+                  "key": "categories",
+                  "value": "Action,Drama",
+                  "type": "text"
+                },
+                {
+                  "key": "directors",
+                  "value": "Christopher Nolan",
+                  "type": "text"
+                },
+                {
+                  "key": "country",
+                  "value": "United States",
+                  "type": "text"
+                },
+                {
+                  "key": "language",
+                  "value": "English",
+                  "type": "text"
+                },
+                {
+                  "key": "isAvailable",
+                  "value": "true",
+                  "type": "text"
+                },
+                {
+                  "key": "ageRating",
+                  "value": "PG-13",
+                  "type": "text"
+                },
+                {
+                  "key": "imdbRating",
+                  "value": "8.5",
+                  "type": "text"
+                },
+                {
+                  "key": "isFeatured",
+                  "value": "true",
+                  "type": "text"
+                },
+                {
+                  "key": "isTrending",
+                  "value": "false",
+                  "type": "text"
+                },
+                {
+                  "key": "releaseDate",
+                  "value": "2024-01-15",
+                  "type": "text"
+                },
+                {
+                  "key": "downloadEnabled",
+                  "value": "true",
+                  "type": "text"
+                },
+                {
+                  "key": "maxDownloadQuality",
+                  "value": "1080p",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/movies/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "movies", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Movie",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/movies/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "movies", "1"]
+            }
+          }
+        },
+        {
+          "name": "Toggle Movie Availability",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/movies/1/availability",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "movies", "1", "availability"]
+            }
+          }
+        },
+        {
+          "name": "Upload Movie Poster",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "poster",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/movies/1/poster",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "movies", "1", "poster"]
+            }
+          }
+        },
+        {
+          "name": "Upload Movie Trailer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "trailer",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/movies/1/trailer",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "movies", "1", "trailer"]
+            }
+          }
+        },
+        {
+          "name": "Upload Movie Subtitle",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "subtitle",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "language",
+                  "value": "en",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/movies/1/subtitle",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "movies", "1", "subtitle"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Comment Management",
+      "item": [
+        {
+          "name": "Get All Comments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/comments?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "comments"],
+              "query": [
+                {"key": "page", "value": "0"},
+                {"key": "size", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Pending Comments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/comments/pending?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "comments", "pending"],
+              "query": [
+                {"key": "page", "value": "0"},
+                {"key": "size", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Comments by Movie",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/comments/movie/1?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "comments", "movie", "1"],
+              "query": [
+                {"key": "page", "value": "0"},
+                {"key": "size", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Comment by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/comments/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "comments", "1"]
+            }
+          }
+        },
+        {
+          "name": "Moderate Comment",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/comments/1/moderate?approved=true&reason=Approved by moderator",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "comments", "1", "moderate"],
+              "query": [
+                {"key": "approved", "value": "true"},
+                {"key": "reason", "value": "Approved by moderator"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Comment",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/comments/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "comments", "1"]
+            }
+          }
+        },
+        {
+          "name": "Bulk Approve Comments",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[1, 2, 3, 4, 5]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/comments/bulk-approve",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "comments", "bulk-approve"]
+            }
+          }
+        },
+        {
+          "name": "Bulk Delete Comments",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[1, 2, 3, 4, 5]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/comments/bulk-delete",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "comments", "bulk-delete"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Report Management",
+      "item": [
+        {
+          "name": "Get All Reports",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/reports?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "reports"],
+              "query": [
+                {"key": "page", "value": "0"},
+                {"key": "size", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Reports by Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/reports/status/PENDING?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "reports", "status", "PENDING"],
+              "query": [
+                {"key": "page", "value": "0"},
+                {"key": "size", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Reports by Type",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/reports/type/SPAM?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "reports", "type", "SPAM"],
+              "query": [
+                {"key": "page", "value": "0"},
+                {"key": "size", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Report by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/reports/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "reports", "1"]
+            }
+          }
+        },
+        {
+          "name": "Resolve Report",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/reports/1/resolve?status=RESOLVED&resolutionNote=Issue resolved",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "reports", "1", "resolve"],
+              "query": [
+                {"key": "status", "value": "RESOLVED"},
+                {"key": "resolutionNote", "value": "Issue resolved"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Report",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/reports?reportedUserId=1&reportType=SPAM&reason=Spam content&description=User posted spam",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "reports"],
+              "query": [
+                {"key": "reportedUserId", "value": "1"},
+                {"key": "reportType", "value": "SPAM"},
+                {"key": "reason", "value": "Spam content"},
+                {"key": "description", "value": "User posted spam"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Bulk Resolve Reports",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[1, 2, 3, 4, 5]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/reports/bulk-resolve?status=RESOLVED&resolutionNote=Bulk resolved",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "reports", "bulk-resolve"],
+              "query": [
+                {"key": "status", "value": "RESOLVED"},
+                {"key": "resolutionNote", "value": "Bulk resolved"}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Country Management",
+      "item": [
+        {
+          "name": "Create Country",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Vietnam",
+                  "type": "text"
+                },
+                {
+                  "key": "flag",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "isActive",
+                  "value": "true",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/countries",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "countries"]
+            }
+          }
+        },
+        {
+          "name": "Get All Countries",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/countries",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "countries"]
+            }
+          }
+        },
+        {
+          "name": "Get Country by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/countries/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "countries", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Country",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Vietnam Updated",
+                  "type": "text"
+                },
+                {
+                  "key": "flag",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "isActive",
+                  "value": "true",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/countries/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "countries", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Country",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/countries/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "countries", "1"]
+            }
+          }
+        },
+        {
+          "name": "Activate Country",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/countries/1/activate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "countries", "1", "activate"]
+            }
+          }
+        },
+        {
+          "name": "Deactivate Country",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/countries/1/deactivate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "countries", "1", "deactivate"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Actor Management",
+      "item": [
+        {
+          "name": "Create Actor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "John Doe",
+                  "type": "text"
+                },
+                {
+                  "key": "dob",
+                  "value": "1990-01-01",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Actor biography",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/actors/form",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "actors", "form"]
+            }
+          }
+        },
+        {
+          "name": "Update Actor",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "John Doe Updated",
+                  "type": "text"
+                },
+                {
+                  "key": "biography",
+                  "value": "Updated actor biography",
+                  "type": "text"
+                },
+                {
+                  "key": "birthDate",
+                  "value": "1990-01-01",
+                  "type": "text"
+                },
+                {
+                  "key": "nationality",
+                  "value": "Canadian",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "isActive",
+                  "value": "true",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/actors/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "actors", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get All Actors",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/actors?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "actors"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Actor by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/actors/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "actors", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Actor",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/actors/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "actors", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Category Management",
+      "item": [
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "name",
+                  "value": "Action",
+                  "type": "text"
+                },
+                {
+                  "key": "displayName",
+                  "value": "Action Movies",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "High-energy movies with lots of action sequences",
+                  "type": "text"
+                },
+                {
+                  "key": "icon",
+                  "value": "🎬",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "categories"]
+            }
+          }
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "displayName",
+                  "value": "Action & Adventure",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Updated description for action movies",
+                  "type": "text"
+                },
+                {
+                  "key": "icon",
+                  "value": "⚔️",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/categories/Action",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "categories", "Action"]
+            }
+          }
+        },
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/categories?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "categories"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Category by Name",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/categories/Action",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "categories", "Action"]
+            }
+          }
+        },
+        {
+          "name": "Delete Category",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/categories/Action",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "categories", "Action"]
+            }
+          }
+        },
+        {
+          "name": "Assign Movie to Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/categories/Action/assign/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "categories", "Action", "assign", "1"]
+            }
+          }
+        },
+        {
+          "name": "Unassign Movie from Category",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/categories/Action/assign/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "categories", "Action", "assign", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analytics & Top Lists",
+      "item": [
+        {
+          "name": "Get Top Movies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/top/movies?limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "top", "movies"],
+              "query": [{"key": "limit", "value": "10"}]
+            }
+          }
+        },
+        {
+          "name": "Get Top Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/top/users?limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "top", "users"],
+              "query": [{"key": "limit", "value": "10"}]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Setup Data",
+      "item": [
+        {
+          "name": "Create Sample Countries",
+          "item": [
+            {
+              "name": "Create United States",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{adminToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "name",
+                      "value": "United States",
+                      "type": "text"
+                    },
+                    {
+                      "key": "flag",
+                      "type": "file",
+                      "src": []
+                    },
+                    {
+                      "key": "isActive",
+                      "value": "true",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/countries",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "countries"]
+                }
+              }
+            },
+            {
+              "name": "Create United Kingdom",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{adminToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "name",
+                      "value": "United Kingdom",
+                      "type": "text"
+                    },
+                    {
+                      "key": "flag",
+                      "type": "file",
+                      "src": []
+                    },
+                    {
+                      "key": "isActive",
+                      "value": "true",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/countries",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "countries"]
+                }
+              }
+            },
+            {
+              "name": "Create Canada",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{adminToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "name",
+                      "value": "Canada",
+                      "type": "text"
+                    },
+                    {
+                      "key": "flag",
+                      "type": "file",
+                      "src": []
+                    },
+                    {
+                      "key": "isActive",
+                      "value": "true",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/countries",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "countries"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Sample Categories",
+          "item": [
+            {
+              "name": "Create Action Category",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{adminToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Action\",\n  \"description\": \"Action movies with exciting sequences\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/categories",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "categories"]
+                }
+              }
+            },
+            {
+              "name": "Create Drama Category",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{adminToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Drama\",\n  \"description\": \"Dramatic movies with emotional content\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/categories",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "categories"]
+                }
+              }
+            },
+            {
+              "name": "Create Comedy Category",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{adminToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Comedy\",\n  \"description\": \"Funny and entertaining movies\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/categories",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "categories"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

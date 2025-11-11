@@ -1,0 +1,581 @@
+{
+  "info": {
+    "name": "AI Movie Backend - Authentication APIs",
+    "description": "Collection of authentication APIs for AI Movie Backend system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "User Registration & Login",
+      "item": [
+        {
+          "name": "User Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.accessToken) {",
+                  "        pm.collectionVariables.set('accessToken', response.accessToken);",
+                  "        console.log('Access token saved:', response.accessToken);",
+                  "    }",
+                  "    if (response.refreshToken) {",
+                  "        pm.collectionVariables.set('refreshToken', response.refreshToken);",
+                  "        console.log('Refresh token saved:', response.refreshToken);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Login with username and password. Returns access token and refresh token."
+          }
+        },
+        {
+          "name": "User Registration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"newuser\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"password123\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"dateOfBirth\": \"1990-01-01\",\n  \"gender\": \"MALE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Register a new user account."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Token Management",
+      "item": [
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            },
+            "description": "Get current user information from the access token."
+          }
+        },
+        {
+          "name": "Validate Token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/validate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "validate"]
+            },
+            "description": "Validate if the current access token is valid and not expired."
+          }
+        }
+      ]
+    },
+    {
+      "name": "User Management (Public)",
+      "item": [
+        {
+          "name": "Get All Users (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            },
+            "description": "Get list of all users (public endpoint)."
+          }
+        },
+        {
+          "name": "Get User by ID (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "1"]
+            },
+            "description": "Get user information by ID (public endpoint)."
+          }
+        },
+        {
+          "name": "Get User by Username (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/username/testuser",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "username", "testuser"]
+            },
+            "description": "Get user information by username (public endpoint)."
+          }
+        },
+        {
+          "name": "Create User (Public)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"publicuser\",\n  \"email\": \"publicuser@example.com\",\n  \"password\": \"password123\",\n  \"firstName\": \"Public\",\n  \"lastName\": \"User\",\n  \"dateOfBirth\": \"1995-05-15\",\n  \"gender\": \"FEMALE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            },
+            "description": "Create a new user (public endpoint)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Movie Discovery (Public)",
+      "item": [
+        {
+          "name": "Get All Movies (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/movies",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "movies"]
+            },
+            "description": "Get list of all movies (public endpoint)."
+          }
+        },
+        {
+          "name": "Get Movie by ID (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/movies/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "movies", "1"]
+            },
+            "description": "Get movie details by ID (public endpoint)."
+          }
+        },
+        {
+          "name": "Search Movies (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/movies/search?q=action&page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "movies", "search"],
+              "query": [
+                {"key": "q", "value": "action"},
+                {"key": "page", "value": "0"},
+                {"key": "size", "value": "10"}
+              ]
+            },
+            "description": "Search movies by query (public endpoint)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Actor Information (Public)",
+      "item": [
+        {
+          "name": "Get All Actors (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/actors?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "actors"],
+              "query": [
+                {"key": "page", "value": "0"},
+                {"key": "size", "value": "20"}
+              ]
+            },
+            "description": "Get list of all actors (public endpoint)."
+          }
+        },
+        {
+          "name": "Get Actor by ID (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/actors/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "actors", "1"]
+            },
+            "description": "Get actor details by ID (public endpoint)."
+          }
+        },
+        {
+          "name": "Get Actor Movies (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/actors/1/movies?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "actors", "1", "movies"],
+              "query": [
+                {"key": "page", "value": "0"},
+                {"key": "size", "value": "20"}
+              ]
+            },
+            "description": "Get movies featuring a specific actor (public endpoint)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search & Discovery (Public)",
+      "item": [
+        {
+          "name": "Quick Search (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/search/quick?query=action&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search", "quick"],
+              "query": [
+                {"key": "query", "value": "action"},
+                {"key": "limit", "value": "10"}
+              ]
+            },
+            "description": "Quick search for movies (public endpoint)."
+          }
+        },
+        {
+          "name": "Search by Genre (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/search/movies/genre/Action?limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search", "movies", "genre", "Action"],
+              "query": [{"key": "limit", "value": "20"}]
+            },
+            "description": "Search movies by genre (public endpoint)."
+          }
+        },
+        {
+          "name": "Search by Actor (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/search/actor/Tom%20Cruise?limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search", "actor", "Tom Cruise"],
+              "query": [{"key": "limit", "value": "20"}]
+            },
+            "description": "Search movies by actor (public endpoint)."
+          }
+        },
+        {
+          "name": "Search by Director (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/search/director/Christopher%20Nolan?limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search", "director", "Christopher Nolan"],
+              "query": [{"key": "limit", "value": "20"}]
+            },
+            "description": "Search movies by director (public endpoint)."
+          }
+        },
+        {
+          "name": "Search by Year (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/search/year/2023?limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search", "year", "2023"],
+              "query": [{"key": "limit", "value": "20"}]
+            },
+            "description": "Search movies by year (public endpoint)."
+          }
+        },
+        {
+          "name": "Search by Rating (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/search/movies/rating?minRating=8.0&maxRating=10.0&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search", "movies", "rating"],
+              "query": [
+                {"key": "minRating", "value": "8.0"},
+                {"key": "maxRating", "value": "10.0"},
+                {"key": "limit", "value": "20"}
+              ]
+            },
+            "description": "Search movies by rating range (public endpoint)."
+          }
+        },
+        {
+          "name": "Get Search Suggestions (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/search/suggestions?query=act&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search", "suggestions"],
+              "query": [
+                {"key": "query", "value": "act"},
+                {"key": "limit", "value": "10"}
+              ]
+            },
+            "description": "Get search suggestions (public endpoint)."
+          }
+        },
+        {
+          "name": "Get Available Genres (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/search/facets/genres",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search", "facets", "genres"]
+            },
+            "description": "Get list of available genres (public endpoint)."
+          }
+        },
+        {
+          "name": "Get Popular Actors (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/search/facets/actors?limit=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search", "facets", "actors"],
+              "query": [{"key": "limit", "value": "50"}]
+            },
+            "description": "Get list of popular actors (public endpoint)."
+          }
+        },
+        {
+          "name": "Get Popular Directors (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/search/facets/directors?limit=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search", "facets", "directors"],
+              "query": [{"key": "limit", "value": "50"}]
+            },
+            "description": "Get list of popular directors (public endpoint)."
+          }
+        },
+        {
+          "name": "Get Available Countries (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/search/facets/countries",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search", "facets", "countries"]
+            },
+            "description": "Get list of available countries (public endpoint)."
+          }
+        },
+        {
+          "name": "Get Available Languages (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/search/facets/languages",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search", "facets", "languages"]
+            },
+            "description": "Get list of available languages (public endpoint)."
+          }
+        },
+        {
+          "name": "Get Trending Searches (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/search/trending?limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search", "trending"],
+              "query": [{"key": "limit", "value": "10"}]
+            },
+            "description": "Get trending search terms (public endpoint)."
+          }
+        },
+        {
+          "name": "Get Popular Searches (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/search/popular?limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search", "popular"],
+              "query": [{"key": "limit", "value": "10"}]
+            },
+            "description": "Get popular search terms (public endpoint)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health & System",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "health"]
+            },
+            "description": "Check if the API service is running."
+          }
+        },
+        {
+          "name": "Streaming Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/streaming/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "streaming", "health"]
+            },
+            "description": "Check if the streaming service is running."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Test Endpoints",
+      "item": [
+        {
+          "name": "Test Endpoint",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/test",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "test"]
+            },
+            "description": "Test endpoint for development purposes."
+          }
+        },
+        {
+          "name": "FFmpeg Test",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/ffmpeg/test",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ffmpeg", "test"]
+            },
+            "description": "Test FFmpeg functionality."
+          }
+        }
+      ]
+    }
+  ]
+}
+
+

@@ -1,0 +1,1309 @@
+{
+  "info": {
+    "name": "AI Movie Backend - User APIs",
+    "description": "Collection of user APIs for AI Movie Backend system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "userToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "User Profile Management",
+      "item": [
+        {
+          "name": "Get User Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Update User Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"bio\": \"Movie enthusiast\",\n  \"preferences\": {\n    \"language\": \"en\",\n    \"quality\": \"HD\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/user/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"oldPassword123\",\n  \"newPassword\": \"newPassword123\",\n  \"confirmPassword\": \"newPassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/user/password",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "password"]
+            }
+          }
+        },
+        {
+          "name": "Update Avatar",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "avatar",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/user/avatar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "avatar"]
+            }
+          }
+        },
+        {
+          "name": "Get User Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "stats"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Watch History",
+      "item": [
+        {
+          "name": "Get Watch History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/watch-history?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "watch-history"],
+              "query": [
+                {"key": "page", "value": "0"},
+                {"key": "size", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Recent Watch History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/watch-history/recent?limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "watch-history", "recent"],
+              "query": [{"key": "limit", "value": "10"}]
+            }
+          }
+        },
+        {
+          "name": "Get Incomplete Watch History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/watch-history/incomplete",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "watch-history", "incomplete"]
+            }
+          }
+        },
+        {
+          "name": "Update Watch History",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"movieId\": 1,\n  \"currentTime\": 3600,\n  \"totalTime\": 7200,\n  \"completed\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/user/watch-history",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "watch-history"]
+            }
+          }
+        },
+        {
+          "name": "Delete Watch History Item",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/watch-history/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "watch-history", "1"]
+            }
+          }
+        },
+        {
+          "name": "Clear Watch History",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/watch-history",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "watch-history"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Favorites",
+      "item": [
+        {
+          "name": "Get Favorites",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/favorites?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "favorites"],
+              "query": [
+                {"key": "page", "value": "0"},
+                {"key": "size", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add to Favorites",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/favorites/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "favorites", "1"]
+            }
+          }
+        },
+        {
+          "name": "Remove from Favorites",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/favorites/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "favorites", "1"]
+            }
+          }
+        },
+        {
+          "name": "Check if Favorite",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/favorites/1/check",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "favorites", "1", "check"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Watchlist",
+      "item": [
+        {
+          "name": "Get Watchlist",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/watchlist",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "watchlist"],
+              "query": [
+                {"key": "page", "value": "0"},
+                {"key": "size", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add to Watchlist",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/watchlist/movie/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "watchlist", "movie", "1"],
+              "query": [{"key": "notes", "value": "Want to watch this weekend"}]
+            }
+          }
+        },
+        {
+          "name": "Remove from Watchlist",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/watchlist/movie/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "watchlist", "movie", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Watchlist Item",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Updated notes\",\n  \"priority\": \"HIGH\",\n  \"status\": \"PLANNED\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/watchlist/movie/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "watchlist", "movie", "1"]
+            }
+          }
+        },
+        {
+          "name": "Check if in Watchlist",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/watchlist/check/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "watchlist", "check", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Watchlist by Priority",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/watchlist/priority",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "watchlist", "priority"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Streaming Preferences",
+      "item": [
+        {
+          "name": "Update Streaming Preferences",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/preferences/streaming?preferredQuality=HD&preferredLanguage=en&autoPlay=true&subtitleEnabled=false",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "preferences", "streaming"],
+              "query": [
+                {"key": "preferredQuality", "value": "HD"},
+                {"key": "preferredLanguage", "value": "en"},
+                {"key": "autoPlay", "value": "true"},
+                {"key": "subtitleEnabled", "value": "false"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Streaming Preferences",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/preferences/streaming",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "preferences", "streaming"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Download Management",
+      "item": [
+        {
+          "name": "Request Download",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"movieId\": 1,\n  \"quality\": \"HD\",\n  \"format\": \"MP4\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/user/download/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "download", "request"]
+            }
+          }
+        },
+        {
+          "name": "Check Download Permission",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/download/1/check",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "download", "1", "check"]
+            }
+          }
+        },
+        {
+          "name": "Get Download History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/download/history",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "user", "download", "history"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Movie Operations",
+      "item": [
+        {
+          "name": "Get All Movies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/movies",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "movies"]
+            }
+          }
+        },
+        {
+          "name": "Get Movie by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/movies/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "movies", "1"]
+            }
+          }
+        },
+        {
+          "name": "Search Movies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/movies/search?q=action&page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "movies", "search"],
+              "query": [
+                {"key": "q", "value": "action"},
+                {"key": "page", "value": "0"},
+                {"key": "size", "value": "10"}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rating System",
+      "item": [
+        {
+          "name": "Create Rating",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"movieId\": 1,\n  \"rating\": 8.5,\n  \"review\": \"Great movie with excellent acting!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ratings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ratings"]
+            }
+          }
+        },
+        {
+          "name": "Update Rating",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 9.0,\n  \"review\": \"Updated review - even better on second watch!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ratings/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ratings", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Ratings by Movie",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/ratings/movie/1?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ratings", "movie", "1"],
+              "query": [
+                {"key": "page", "value": "0"},
+                {"key": "size", "value": "10"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User Ratings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/ratings/user/1?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ratings", "user", "1"],
+              "query": [
+                {"key": "page", "value": "0"},
+                {"key": "size", "value": "10"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User Rating for Movie",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/ratings/user/1/movie/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ratings", "user", "1", "movie", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Rating",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/ratings/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ratings", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search & Discovery",
+      "item": [
+        {
+          "name": "Quick Search",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/search/quick?query=action&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search", "quick"],
+              "query": [
+                {"key": "query", "value": "action"},
+                {"key": "limit", "value": "10"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Advanced Search",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"action\",\n  \"genres\": [\"Action\", \"Thriller\"],\n  \"actors\": [\"Tom Cruise\"],\n  \"directors\": [\"Christopher Nolan\"],\n  \"yearFrom\": 2020,\n  \"yearTo\": 2024,\n  \"country\": \"USA\",\n  \"language\": \"English\",\n  \"minRating\": 7.0,\n  \"maxRating\": 10.0,\n  \"sortBy\": \"rating\",\n  \"sortDirection\": \"desc\",\n  \"page\": 0,\n  \"size\": 20\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/search/advanced",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search", "advanced"]
+            }
+          }
+        },
+        {
+          "name": "Search by Genre",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/search/movies/genre/Action?limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search", "movies", "genre", "Action"],
+              "query": [{"key": "limit", "value": "20"}]
+            }
+          }
+        },
+        {
+          "name": "Search by Actor",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/search/movies/actor/Tom%20Cruise?limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search", "movies", "actor", "Tom Cruise"],
+              "query": [{"key": "limit", "value": "20"}]
+            }
+          }
+        },
+        {
+          "name": "Search by Director",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/search/movies/director/Christopher%20Nolan?limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search", "movies", "director", "Christopher Nolan"],
+              "query": [{"key": "limit", "value": "20"}]
+            }
+          }
+        },
+        {
+          "name": "Search by Year",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/search/movies/year/2023?limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search", "movies", "year", "2023"],
+              "query": [{"key": "limit", "value": "20"}]
+            }
+          }
+        },
+        {
+          "name": "Search by Rating",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/search/movies/rating?minRating=8.0&maxRating=10.0&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search", "movies", "rating"],
+              "query": [
+                {"key": "minRating", "value": "8.0"},
+                {"key": "maxRating", "value": "10.0"},
+                {"key": "limit", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Search Suggestions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/search/suggestions?query=act&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search", "suggestions"],
+              "query": [
+                {"key": "query", "value": "act"},
+                {"key": "limit", "value": "10"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Search History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/search/history",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search", "history"]
+            }
+          }
+        },
+        {
+          "name": "Clear Search History",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/search/history",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search", "history"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Streaming",
+      "item": [
+        {
+          "name": "Get Movie for Streaming",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/streaming/movie/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "streaming", "movie", "1"]
+            }
+          }
+        },
+        {
+          "name": "Start Streaming",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"movieId\": 1,\n  \"quality\": \"HD\",\n  \"subtitleLanguage\": \"en\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/streaming/start",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "streaming", "start"]
+            }
+          }
+        },
+        {
+          "name": "Update Streaming Progress",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/streaming/progress/1?currentTime=3600&totalTime=7200",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "streaming", "progress", "1"],
+              "query": [
+                {"key": "currentTime", "value": "3600"},
+                {"key": "totalTime", "value": "7200"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Movie Subtitles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/streaming/movie/1/subtitles",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "streaming", "movie", "1", "subtitles"]
+            }
+          }
+        },
+        {
+          "name": "Get Default Subtitle",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/streaming/movie/1/subtitle/default",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "streaming", "movie", "1", "subtitle", "default"]
+            }
+          }
+        },
+        {
+          "name": "Get Subtitle by Language",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/streaming/movie/1/subtitle/vi",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "streaming", "movie", "1", "subtitle", "vi"]
+            }
+          }
+        },
+        {
+          "name": "Get Available Qualities",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/streaming/movie/1/qualities",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "streaming", "movie", "1", "qualities"]
+            }
+          }
+        },
+        {
+          "name": "Get Streaming URL by Quality",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/streaming/movie/1/quality/HD",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "streaming", "movie", "1", "quality", "HD"]
+            }
+          }
+        },
+        {
+          "name": "Change Video Resolution",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/streaming/movie/1/change-resolution?quality=4K&currentTime=1800",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "streaming", "movie", "1", "change-resolution"],
+              "query": [
+                {"key": "quality", "value": "4K"},
+                {"key": "currentTime", "value": "1800"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Available Resolutions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/streaming/movie/1/available-resolutions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "streaming", "movie", "1", "available-resolutions"]
+            }
+          }
+        },
+        {
+          "name": "Get Best Available Quality",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/streaming/movie/1/best-quality?preferredQuality=4K",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "streaming", "movie", "1", "best-quality"],
+              "query": [{"key": "preferredQuality", "value": "4K"}]
+            }
+          }
+        },
+        {
+          "name": "Check Resolution Availability",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/streaming/movie/1/check-resolution/4K",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "streaming", "movie", "1", "check-resolution", "4K"]
+            }
+          }
+        },
+        {
+          "name": "Pause Streaming",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/streaming/pause/1?currentTime=3600",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "streaming", "pause", "1"],
+              "query": [{"key": "currentTime", "value": "3600"}]
+            }
+          }
+        },
+        {
+          "name": "Resume Streaming",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/streaming/resume/1?quality=HD&subtitleLanguage=en",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "streaming", "resume", "1"],
+              "query": [
+                {"key": "quality", "value": "HD"},
+                {"key": "subtitleLanguage", "value": "en"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Seek to Time",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/streaming/seek/1?seekTime=1800",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "streaming", "seek", "1"],
+              "query": [{"key": "seekTime", "value": "1800"}]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+
+
