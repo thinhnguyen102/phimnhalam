@@ -224,13 +224,13 @@ public class AdminController {
             // Upload video
             if (video != null && !video.isEmpty()) {
                 String videoFilename = fileUploadService.uploadVideoFile(video);
-                videoUrl = "/api/videos/stream/" + videoFilename;
+                videoUrl = fileUploadService.buildPublicVideoUrl(videoFilename);
             }
             
             // Upload trailer
             if (trailer != null && !trailer.isEmpty()) {
                 String trailerFilename = fileUploadService.uploadVideoFile(trailer);
-                trailerUrl = "/api/videos/stream/" + trailerFilename;
+                trailerUrl = fileUploadService.buildPublicVideoUrl(trailerFilename);
             }
             
             String effectiveDirector = (directorName != null && !directorName.isBlank()) ? directorName : directors;
@@ -341,13 +341,13 @@ public class AdminController {
             // Upload video
             if (video != null && !video.isEmpty()) {
                 String videoFilename = fileUploadService.uploadVideoFile(video);
-                videoUrl = "/api/videos/stream/" + videoFilename;
+                videoUrl = fileUploadService.buildPublicVideoUrl(videoFilename);
             }
             
             // Upload trailer
             if (trailer != null && !trailer.isEmpty()) {
                 String trailerFilename = fileUploadService.uploadVideoFile(trailer);
-                trailerUrl = "/api/videos/stream/" + trailerFilename;
+                trailerUrl = fileUploadService.buildPublicVideoUrl(trailerFilename);
             }
             
             String effectiveDirector = (directorName != null && !directorName.isBlank()) ? directorName : directors;

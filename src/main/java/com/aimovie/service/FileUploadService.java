@@ -98,19 +98,45 @@ public class FileUploadService {
     public String uploadVideoFile(MultipartFile file) throws IOException {
         validateFile(file);
 
+        String originalFilename = file.getOriginalFilename();
+        String fileExtension = getFileExtension(originalFilename);
+        String uniqueFilename = UUID.randomUUID().toString() + "." + fileExtension;
+
         Path uploadPath = Paths.get(uploadDir);
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
 
-        String originalFilename = file.getOriginalFilename();
-        String fileExtension = getFileExtension(originalFilename);
-        String uniqueFilename = UUID.randomUUID().toString() + "." + fileExtension;
-
         Path filePath = uploadPath.resolve(uniqueFilename);
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        log.info("Video file saved locally: {}", uniqueFilename);
 
-        log.info("File uploaded successfully: {}", uniqueFilename);
+        if (cloudStorageEnabled) {
+            try {
+                String key = buildCloudKey(cloudVideoFolder, uniqueFilename);
+                try (InputStream inputStream = Files.newInputStream(filePath)) {
+                    long fileSize = Files.size(filePath);
+                    String contentType = file.getContentType();
+                    if (contentType == null) {
+                        contentType = "video/mp4";
+                    }
+                    getS3Client().putObject(
+                            PutObjectRequest.builder()
+                                    .bucket(cloudBucket)
+                                    .key(key)
+                                    .contentType(contentType)
+                                    .build(),
+                            RequestBody.fromInputStream(inputStream, fileSize)
+                    );
+                    log.info("Video uploaded to cloud storage: {}", key);
+                } catch (SdkException e) {
+                    log.warn("Failed to upload video to cloud storage, keeping local copy: {}", e.getMessage());
+                }
+            } catch (Exception e) {
+                log.warn("Error uploading video to cloud storage: {}", e.getMessage());
+            }
+        }
+
         return uniqueFilename;
     }
 
@@ -123,10 +149,26 @@ public class FileUploadService {
     }
 
     public void deleteVideoFile(String filename) throws IOException {
+        if (filename == null || filename.isBlank()) {
+            return;
+        }
+        if (cloudStorageEnabled) {
+            String key = buildCloudKey(cloudVideoFolder, filename);
+            try {
+                getS3Client().deleteObject(DeleteObjectRequest.builder()
+                        .bucket(cloudBucket)
+                        .key(key)
+                        .build());
+                log.info("Video deleted from cloud storage: {}", key);
+            } catch (SdkException e) {
+                log.warn("Failed to delete video {} from cloud storage: {}", key, e.getMessage());
+            }
+            return;
+        }
         Path filePath = getVideoFilePath(filename);
         if (Files.exists(filePath)) {
             Files.delete(filePath);
-            log.info("File deleted successfully: {}", filename);
+            log.info("Video file deleted successfully: {}", filename);
         }
     }
 
@@ -168,21 +210,46 @@ public class FileUploadService {
     }
 
     public VideoUploadResult uploadVideoWithMetadata(MultipartFile file) throws IOException {
-        // Validate file
         validateFile(file);
-
-        // Create upload directory if it doesn't exist
-        Path uploadPath = Paths.get(uploadDir);
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
-        }
 
         String originalFilename = file.getOriginalFilename();
         String fileExtension = getFileExtension(originalFilename);
         String uniqueFilename = UUID.randomUUID().toString() + "." + fileExtension;
 
+        Path uploadPath = Paths.get(uploadDir);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
         Path filePath = uploadPath.resolve(uniqueFilename);
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        log.info("Video file saved locally for processing: {}", uniqueFilename);
+
+        if (cloudStorageEnabled) {
+            try {
+                String key = buildCloudKey(cloudVideoFolder, uniqueFilename);
+                try (InputStream inputStream = Files.newInputStream(filePath)) {
+                    long fileSize = Files.size(filePath);
+                    String contentType = file.getContentType();
+                    if (contentType == null) {
+                        contentType = "video/mp4";
+                    }
+                    getS3Client().putObject(
+                            PutObjectRequest.builder()
+                                    .bucket(cloudBucket)
+                                    .key(key)
+                                    .contentType(contentType)
+                                    .build(),
+                            RequestBody.fromInputStream(inputStream, fileSize)
+                    );
+                    log.info("Video uploaded to cloud storage: {}", key);
+                } catch (SdkException e) {
+                    log.warn("Failed to upload video to cloud storage, keeping local copy: {}", e.getMessage());
+                }
+            } catch (Exception e) {
+                log.warn("Error uploading video to cloud storage: {}", e.getMessage());
+            }
+        }
 
         VideoMetadataService.VideoMetadata metadata = videoMetadataService.extractMetadata(file);
 
@@ -321,6 +388,53 @@ public class FileUploadService {
             return buildCdnUrl(cloudVideoFolder, filename);
         }
         return "/api/videos/stream/" + filename;
+    }
+
+    public String buildPublicVideoUrl(Long movieId, String filename) {
+        if (filename == null || filename.isBlank()) {
+            return null;
+        }
+        if (cloudStorageEnabled) {
+            String key = buildCloudKey(cloudVideoFolder, movieId + "/" + filename);
+            if (cdnBaseUrl == null || cdnBaseUrl.isBlank()) {
+                return key;
+            }
+            String base = cdnBaseUrl.endsWith("/") ? cdnBaseUrl.substring(0, cdnBaseUrl.length() - 1) : cdnBaseUrl;
+            return base + "/" + key;
+        }
+        return "/api/videos/stream/" + movieId + "/" + filename;
+    }
+
+    public String uploadVideoFileFromPath(Path filePath, Long movieId, String filename) throws IOException {
+        if (cloudStorageEnabled) {
+            String key = buildCloudKey(cloudVideoFolder, movieId + "/" + filename);
+            try (InputStream inputStream = Files.newInputStream(filePath)) {
+                long fileSize = Files.size(filePath);
+                String contentType = "video/mp4";
+                if (filename.toLowerCase().endsWith(".mkv")) {
+                    contentType = "video/x-matroska";
+                } else if (filename.toLowerCase().endsWith(".avi")) {
+                    contentType = "video/x-msvideo";
+                } else if (filename.toLowerCase().endsWith(".mov")) {
+                    contentType = "video/quicktime";
+                }
+                
+                getS3Client().putObject(
+                        PutObjectRequest.builder()
+                                .bucket(cloudBucket)
+                                .key(key)
+                                .contentType(contentType)
+                                .build(),
+                        RequestBody.fromInputStream(inputStream, fileSize)
+                );
+                log.info("Video file uploaded to cloud storage from path: {}", key);
+                return filename;
+            } catch (SdkException e) {
+                log.error("Failed to upload video file to cloud storage", e);
+                throw new IOException("Failed to upload video file to cloud storage", e);
+            }
+        }
+        return filename;
     }
 
     private synchronized S3Client getS3Client() {

@@ -285,7 +285,7 @@ public class MovieController {
             
             // Update movie with video URL
             MovieDTOs.MovieUpdateDTO updateDTO = new MovieDTOs.MovieUpdateDTO();
-            updateDTO.setVideoUrl("/api/videos/stream/" + uploadResult.getFilename());
+            updateDTO.setVideoUrl(fileUploadService.buildPublicVideoUrl(uploadResult.getFilename()));
             updateDTO.setVideoFormat(metadata.getVideoFormat());
             updateDTO.setVideoDuration(metadata.getDurationInSeconds());
             updateDTO.setVideoQuality("1440p");
@@ -360,7 +360,7 @@ public class MovieController {
             createDTO.setSynopsis(synopsis);
             createDTO.setYear(year);
             createDTO.setPosterUrl(posterUrl);
-            createDTO.setVideoUrl("/api/videos/stream/" + uploadResult.getFilename());
+            createDTO.setVideoUrl(fileUploadService.buildPublicVideoUrl(uploadResult.getFilename()));
             createDTO.setVideoFormat(metadata.getVideoFormat());
             createDTO.setVideoDuration(metadata.getDurationInSeconds()); 
             createDTO.setVideoQuality("1440p");
@@ -476,7 +476,7 @@ public class MovieController {
                 
                 // Update movie with video info
                 MovieDTOs.MovieUpdateDTO updateDTO = new MovieDTOs.MovieUpdateDTO();
-                updateDTO.setVideoUrl("/api/videos/stream/" + uploadResult.getFilename());
+                updateDTO.setVideoUrl(fileUploadService.buildPublicVideoUrl(uploadResult.getFilename()));
                 updateDTO.setVideoFormat(metadata.getVideoFormat());
                 updateDTO.setVideoDuration(metadata.getDurationInSeconds());
                 updateDTO.setVideoQuality(metadata.getVideoQuality());

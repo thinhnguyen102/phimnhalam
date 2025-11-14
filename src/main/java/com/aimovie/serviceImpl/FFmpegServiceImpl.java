@@ -7,6 +7,7 @@ import com.aimovie.entity.VideoResolution;
 import com.aimovie.repository.MovieRepository;
 import com.aimovie.repository.VideoResolutionRepository;
 import com.aimovie.service.FFmpegService;
+import com.aimovie.service.FileUploadService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bytedeco.ffmpeg.global.avcodec;
@@ -32,6 +33,7 @@ public class FFmpegServiceImpl implements FFmpegService {
 
     private final VideoResolutionRepository videoResolutionRepository;
     private final MovieRepository movieRepository;
+    private final FileUploadService fileUploadService;
 
     @Value("${app.video.upload-dir:uploads/videos}")
     private String videoUploadDir;
@@ -122,7 +124,13 @@ public class FFmpegServiceImpl implements FFmpegService {
                     processedVideos.add(result);
                     
                     if (result.isSuccess()) {
-                        // Create VideoResolution entity
+                        try {
+                            String uploadedFilename = fileUploadService.uploadVideoFileFromPath(outputPath, movieId, outputFileName);
+                            log.info("Uploaded resolution {} to cloud storage: {}", config.quality, uploadedFilename);
+                        } catch (Exception e) {
+                            log.error("Failed to upload resolution {} to cloud storage: {}", config.quality, e.getMessage());
+                        }
+                        
                         createVideoResolutionEntity(movieId, config, outputPath, result.getFileSizeBytes());
                     }
                     
@@ -275,12 +283,15 @@ public class FFmpegServiceImpl implements FFmpegService {
 
     private void createVideoResolutionEntity(Long movieId, VideoQualityConfig config, Path outputPath, long fileSize) {
         try {
+            String filename = outputPath.getFileName().toString();
+            String videoUrl = fileUploadService.buildPublicVideoUrl(movieId, filename);
+            
             VideoResolution videoResolution = VideoResolution.builder()
                     .movie(movieRepository.findById(movieId).orElse(null))
                     .quality(config.quality)
                     .width(config.width)
                     .height(config.height)
-                    .videoUrl("/api/videos/stream/" + movieId + "/" + outputPath.getFileName().toString())
+                    .videoUrl(videoUrl)
                     .videoFormat("mp4")
                     .fileSizeBytes(fileSize)
                     .bitrate(config.bitrate)
@@ -309,12 +320,14 @@ public class FFmpegServiceImpl implements FFmpegService {
                 try {
                     long fileSize = Files.size(outputPath);
                     
+                    String videoUrl = fileUploadService.buildPublicVideoUrl(movieId, fileName);
+                    
                     VideoResolution resolution = VideoResolution.builder()
                             .movie(movieRepository.findById(movieId).orElse(null))
                             .quality(config.quality)
                             .width(config.width)
                             .height(config.height)
-                            .videoUrl("/api/videos/stream/" + movieId + "/" + fileName)
+                            .videoUrl(videoUrl)
                             .videoFormat("mp4")
                             .fileSizeBytes(fileSize)
                             .bitrate(config.bitrate)
