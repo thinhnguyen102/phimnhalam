@@ -50,4 +50,6 @@ public interface SubtitleRepository extends JpaRepository<Subtitle, Long> {
     List<Subtitle> findByMovieAndLanguageCode(@Param("movie") Movie movie, @Param("languageCode") String languageCode);
     
     void deleteByMovie(Movie movie);
+
+    List<Subtitle> findByMovie(Movie movie);
 }

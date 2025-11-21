@@ -450,6 +450,7 @@ public class AiActorRecognitionServiceImpl implements AiActorRecognitionService 
                 .averageRating(movie.getAverageRating())
                 .viewCount(movie.getViewCount())
                 .posterUrl(movie.getPosterUrl())
+                .thumbnailUrl(movie.getThumbnailUrl())
                 .trailerUrl(movie.getTrailerUrl())
                 .isFeatured(movie.getIsFeatured())
                 .isTrending(movie.getIsTrending())

@@ -24,6 +24,7 @@ public class MovieSearchDTO {
     private Double averageRating;
     private Long viewCount;
     private String posterUrl;
+    private String thumbnailUrl;
     private String trailerUrl;
     private Boolean isFeatured;
     private Boolean isTrending;

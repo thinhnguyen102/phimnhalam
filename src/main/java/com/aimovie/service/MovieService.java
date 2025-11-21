@@ -4,6 +4,7 @@ import com.aimovie.dto.MovieDTOs;
 import com.aimovie.dto.PageResponse;
 import com.aimovie.dto.ActorCRUD;
 import com.aimovie.entity.Movie;
+import com.aimovie.entity.Subtitle;
 import com.aimovie.mapper.MovieMapper;
 import com.aimovie.repository.CategoryRepository;
 import com.aimovie.repository.MovieRepository;
@@ -143,6 +144,18 @@ public class MovieService {
         favoriteRepository.deleteByMovie(movie);
         watchHistoryRepository.deleteByMovie(movie);
         videoResolutionRepository.deleteByMovie(movie);
+        List<Subtitle> subtitles = subtitleRepository.findByMovie(movie);
+        for (Subtitle subtitle : subtitles) {
+            String subtitleFilename = extractFilenameFromUrl(subtitle.getSubtitleUrl());
+            if (subtitleFilename == null || subtitleFilename.isBlank()) {
+                continue;
+            }
+            try {
+                fileUploadService.deleteSubtitleFile(subtitleFilename);
+            } catch (IOException e) {
+                log.warn("Failed to delete subtitle file {} for movie {}: {}", subtitleFilename, movieId, e.getMessage());
+            }
+        }
         subtitleRepository.deleteByMovie(movie);
         appearanceRepository.deleteByMovieId(movieId);
         

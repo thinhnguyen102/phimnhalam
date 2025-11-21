@@ -100,8 +100,14 @@ public class FFmpegServiceImpl implements FFmpegService {
         try {
             log.info("Starting video processing for movie ID: {}, file: {}", movieId, originalFileName);
             
-            // Create output directory
-            Path outputDir = Paths.get(videoUploadDir, movieId.toString());
+            boolean cloudEnabled = fileUploadService.isCloudStorageEnabled();
+            Path outputDir;
+            
+            if (cloudEnabled) {
+                outputDir = Paths.get(tempDir, "ffmpeg", movieId.toString());
+            } else {
+                outputDir = Paths.get(videoUploadDir, movieId.toString());
+            }
             Files.createDirectories(outputDir);
             
             // Process each quality
@@ -124,14 +130,22 @@ public class FFmpegServiceImpl implements FFmpegService {
                     processedVideos.add(result);
                     
                     if (result.isSuccess()) {
-                        try {
-                            String uploadedFilename = fileUploadService.uploadVideoFileFromPath(outputPath, movieId, outputFileName);
-                            log.info("Uploaded resolution {} to cloud storage: {}", config.quality, uploadedFilename);
-                        } catch (Exception e) {
-                            log.error("Failed to upload resolution {} to cloud storage: {}", config.quality, e.getMessage());
+                        if (cloudEnabled) {
+                            try {
+                                String uploadedFilename = fileUploadService.uploadVideoFileFromPath(outputPath, movieId, outputFileName);
+                                log.info("Uploaded resolution {} to cloud storage: {}", config.quality, uploadedFilename);
+                                
+                                createVideoResolutionEntity(movieId, config, outputFileName, result.getFileSizeBytes());
+                                
+                                Files.deleteIfExists(outputPath);
+                                log.info("Deleted temp file after upload: {}", outputPath);
+                            } catch (Exception e) {
+                                log.error("Failed to upload resolution {} to cloud storage: {}", config.quality, e.getMessage());
+                                createVideoResolutionEntity(movieId, config, outputFileName, result.getFileSizeBytes());
+                            }
+                        } else {
+                            createVideoResolutionEntity(movieId, config, outputPath, result.getFileSizeBytes());
                         }
-                        
-                        createVideoResolutionEntity(movieId, config, outputPath, result.getFileSizeBytes());
                     }
                     
                 } catch (Exception e) {
@@ -145,6 +159,24 @@ public class FFmpegServiceImpl implements FFmpegService {
             }
             
             long processingTime = System.currentTimeMillis() - startTime;
+            
+            if (cloudEnabled && Files.exists(outputDir)) {
+                try {
+                    Files.walk(outputDir)
+                            .sorted((a, b) -> b.compareTo(a))
+                            .forEach(path -> {
+                                try {
+                                    Files.deleteIfExists(path);
+                                } catch (Exception e) {
+                                    log.warn("Could not delete temp file: {}", path);
+                                }
+                            });
+                    Files.deleteIfExists(outputDir);
+                    log.info("Cleaned up temp directory: {}", outputDir);
+                } catch (Exception e) {
+                    log.warn("Error cleaning up temp directory {}: {}", outputDir, e.getMessage());
+                }
+            }
             
             // Update movie's available qualities after successful processing
             updateMovieAvailableQualities(movieId);
@@ -282,8 +314,12 @@ public class FFmpegServiceImpl implements FFmpegService {
     }
 
     private void createVideoResolutionEntity(Long movieId, VideoQualityConfig config, Path outputPath, long fileSize) {
+        String filename = outputPath.getFileName().toString();
+        createVideoResolutionEntity(movieId, config, filename, fileSize);
+    }
+
+    private void createVideoResolutionEntity(Long movieId, VideoQualityConfig config, String filename, long fileSize) {
         try {
-            String filename = outputPath.getFileName().toString();
             String videoUrl = fileUploadService.buildPublicVideoUrl(movieId, filename);
             
             VideoResolution videoResolution = VideoResolution.builder()

@@ -4,6 +4,7 @@ import com.aimovie.dto.*;
 import com.aimovie.entity.Report;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -45,7 +46,7 @@ public interface AdminService {
 
     AdminMovieDTO uploadMovieTrailer(Long movieId, String trailerUrl);
     AdminMovieDTO uploadMoviePoster(Long movieId, String posterUrl);
-    AdminMovieDTO uploadMovieSubtitle(Long movieId, String subtitleUrl, String language);
+    AdminMovieDTO uploadMovieSubtitle(Long movieId, MultipartFile subtitleFile, String languageCode, String languageName, Boolean isDefault);
 
     void bulkApproveComments(List<Long> commentIds);
     void bulkDeleteComments(List<Long> commentIds);

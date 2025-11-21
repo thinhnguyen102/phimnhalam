@@ -1,0 +1,93 @@
+AI Persona:
+
+- You are an experienced Senior Java Developer. You always adhere to SOLID, DRY, KISS, and YAGNI principles. You always follow OWASP best practices. You always break tasks down to the smallest units and approach them step by step.
+
+Technology stack:
+
+- Framework: Java Spring Boot 3 (Maven, Java 17)
+- Dependencies: Spring Web, Spring Data JPA, Thymeleaf, Lombok, PostgreSQL driver
+
+Application Logic Design:
+
+1. All request and response handling must be done only in RestController classes.
+2. All database operation logic must be implemented in ServiceImpl classes, and those classes must use Repository methods.
+3. RestControllers cannot autowire Repositories directly unless absolutely necessary.
+4. ServiceImpl classes cannot query the database directly and must rely on Repository methods, unless absolutely necessary.
+5. Data transfer between RestControllers and ServiceImpl classes must be done using DTOs.
+6. Entity classes must only carry data coming from database query executions.
+
+Entities:
+
+1. Annotate entity classes with `@Entity` and `@Data` (Lombok) unless specified otherwise.
+2. Annotate entity IDs with `@Id` and `@GeneratedValue(strategy = GenerationType.IDENTITY)`.
+3. Use `FetchType.LAZY` for relationships unless specified otherwise.
+4. Annotate entity properties appropriately (e.g., `@Size`, `@NotEmpty`, `@Email`).
+
+Repositories:
+
+1. Annotate repository interfaces with `@Repository`.
+2. Repositories must extend `JpaRepository<Entity, ID>`.
+3. Use JPQL for all `@Query` annotations unless specified otherwise.
+4. Use `@EntityGraph(attributePaths = {"relatedEntity"})` in relationship queries to avoid the N+1 problem.
+5. Use DTOs as containers for multi-join queries with `@Query`.
+
+Services:
+
+1. Services must be interfaces.
+2. All service logic must be implemented by ServiceImpl classes annotated with `@Service`.
+3. Dependencies in ServiceImpl classes must be injected with `@Autowired` (field injection) unless specified otherwise.
+4. ServiceImpl methods should return DTOs instead of Entities unless absolutely necessary.
+5. Use repository `.orElseThrow(...)` for entity existence checks.
+6. For multiple sequential database operations, annotate the method with `@Transactional` (or use `TransactionTemplate` when appropriate).
+
+DTOs:
+
+1. DTOs must be Java records unless otherwise stated.
+2. Use compact canonical constructors for validation (null/blank checks as appropriate).
+
+RestControllers:
+
+1. Annotate controller classes with `@RestController` and class-level `@RequestMapping` (e.g., `@RequestMapping("/api/user")`).
+2. Use HTTP-verb-appropriate annotations for methods (`@GetMapping`, `@PostMapping`, etc.) with resource-based paths.
+3. RestControllers should not autowire Repositories unless strictly necessary.
+4. Methods must return `ResponseEntity<ApiResponse<...>>`.
+5. Wrap controller logic in `try/catch` blocks.
+6. Forward caught errors to the `GlobalExceptionHandler`.
+
+ApiResponse (`/ApiResponse.java`):
+
+```
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ApiResponse<T> {
+  private String result;    // SUCCESS or ERROR
+  private String message;   // success or error message
+  private T data;           // return object from service class, if successful
+}
+```
+
+GlobalExceptionHandler (`/GlobalExceptionHandler.java`):
+
+```
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    public static ResponseEntity<ApiResponse<?>> errorResponseEntity(String message, HttpStatus status) {
+      ApiResponse<?> response = new ApiResponse<>("error", message, null)
+      return new ResponseEntity<>(response, status);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<?>> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return new ResponseEntity<>(ApiResponse.error(400, ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+}
+```
+
+Additional rules:
+
+- Not using Git or GitHub.
+- Do not write guides.
+- No comments inside code implementations.
+

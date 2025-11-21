@@ -20,9 +20,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -222,8 +220,9 @@ public class AdminController {
             }
             
             // Upload video
+            String videoFilename = null;
             if (video != null && !video.isEmpty()) {
-                String videoFilename = fileUploadService.uploadVideoFile(video);
+                videoFilename = fileUploadService.uploadVideoFile(video);
                 videoUrl = fileUploadService.buildPublicVideoUrl(videoFilename);
             }
             
@@ -260,13 +259,11 @@ public class AdminController {
             AdminMovieDTO movie = adminService.createMovie(request);
             
             // Start async FFmpeg processing for multiple resolutions if video was uploaded
-            if (video != null && !video.isEmpty() && videoUrl != null) {
+            if (video != null && !video.isEmpty() && videoFilename != null) {
                 try {
-                    // Extract filename from videoUrl (remove /api/videos/stream/ prefix)
-                    String videoFilename = videoUrl.replace("/api/videos/stream/", "");
-                    Path inputVideoPath = Paths.get("uploads/videos", videoFilename);
+                    Path inputVideoPath = fileUploadService.getVideoFilePath(videoFilename);
                     
-                    if (Files.exists(inputVideoPath)) {
+                    if (fileUploadService.fileExists(videoFilename)) {
                         ffmpegService.processVideoToMultipleResolutions(inputVideoPath, movie.getId(), videoFilename)
                                 .thenAccept(result -> {
                                     if (result.isSuccess()) {
@@ -451,19 +448,28 @@ public class AdminController {
 
     @PostMapping("/movies/{movieId}/subtitle")
     @PreAuthorize("hasRole('ADMIN') or hasRole('UPLOADER')")
-    public ResponseEntity<AdminMovieDTO> uploadMovieSubtitle(
+    public ResponseEntity<ApiResponse<AdminMovieDTO>> uploadMovieSubtitle(
             @PathVariable Long movieId,
             @RequestParam("subtitle") MultipartFile subtitleFile,
-            @RequestParam("language") String language) {
+            @RequestParam("languageCode") String languageCode,
+            @RequestParam(value = "languageName", required = false) String languageName,
+            @RequestParam(value = "isDefault", required = false, defaultValue = "false") Boolean isDefault) {
         try {
-            AdminMovieDTO movie = adminService.getMovieById(movieId);
-            return ResponseEntity.ok(movie);
+            AdminMovieDTO movie = adminService.uploadMovieSubtitle(movieId, subtitleFile, languageCode, languageName, isDefault);
+            ApiResponse<AdminMovieDTO> apiResponse = new ApiResponse<>("SUCCESS", "Subtitle uploaded successfully", movie);
+            return ResponseEntity.ok(apiResponse);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid subtitle upload request for movie id: {}", movieId, e);
+            ApiResponse<AdminMovieDTO> apiResponse = new ApiResponse<>("ERROR", e.getMessage(), null);
+            return ResponseEntity.badRequest().body(apiResponse);
         } catch (RuntimeException e) {
             log.error("Movie not found with id: {}", movieId, e);
-            return ResponseEntity.notFound().build();
+            ApiResponse<AdminMovieDTO> apiResponse = new ApiResponse<>("ERROR", e.getMessage(), null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
         } catch (Exception e) {
             log.error("Error uploading subtitle for movie id: {}", movieId, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            ApiResponse<AdminMovieDTO> apiResponse = new ApiResponse<>("ERROR", "Internal server error", null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
         }
     }
 

@@ -460,8 +460,9 @@ public class UserFeatureServiceImpl implements UserFeatureService {
 
     @Override
     public StreamingResponse startStreaming(Long userId, StreamingRequest request) {
+        User user = null;
         if (userId != null) {
-            userRepository.findById(userId)
+            user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
         }
         
@@ -471,28 +472,13 @@ public class UserFeatureServiceImpl implements UserFeatureService {
         movie.setViewCount(movie.getViewCount() + 1);
         movieRepository.save(movie);
         
-        String requestedQuality = request.getQuality();
-        String defaultQuality = "720p";
-        
-        List<String> availableQualities = getAvailableQualitiesByMovieId(movie.getId());
-        if (availableQualities.isEmpty()) {
-            List<String> detected = new ArrayList<>();
-            for (String q : List.of("360p", "720p", "1080p")) {
-                String fileName = movie.getId() + "_" + q + ".mp4";
-                Path p = Paths.get("uploads", "videos", String.valueOf(movie.getId()), fileName);
-                if (Files.exists(p)) {
-                    detected.add(q);
-                }
-            }
-            availableQualities = detected;
-        }
-        
-        String chosenQuality = (requestedQuality == null || requestedQuality.isBlank()) ? defaultQuality : requestedQuality;
-        if (!availableQualities.contains(chosenQuality)) {
-            chosenQuality = getBestAvailableQuality(movie.getId(), defaultQuality);
-        }
+        List<String> availableQualities = resolveAvailableQualities(movie);
+        String chosenQuality = resolveRequestedQuality(availableQualities, request.getQuality());
 
         String streamingUrl = getStreamingUrl(movie, chosenQuality);
+        if (streamingUrl == null) {
+            throw new RuntimeException("Streaming URL is not available for movie id: " + movie.getId());
+        }
 
         if (movie.getVideoDuration() == null) {
             try {
@@ -513,17 +499,16 @@ public class UserFeatureServiceImpl implements UserFeatureService {
             } catch (Exception ignored) { }
         }
         
-        String subtitleUrl = null;
-        if (request.getSubtitleLanguage() != null) {
-            Optional<Subtitle> subtitle = subtitleRepository.findByMovieAndLanguageCodeAndIsAvailableTrue(movie, request.getSubtitleLanguage());
-            subtitleUrl = subtitle.map(Subtitle::getSubtitleUrl).orElse(null);
+        List<SubtitleDTO> availableSubtitles = getMovieSubtitles(request.getMovieId());
+        String subtitleLanguage = resolveSubtitleLanguage(request.getSubtitleLanguage(), availableSubtitles);
+        String subtitleUrl = resolveSubtitleUrl(subtitleLanguage, availableSubtitles);
+        Boolean subtitleEnabled = request.getSubtitleEnabled();
+        if (subtitleEnabled == null) {
+            subtitleEnabled = user != null ? user.getSubtitleEnabled() : Boolean.TRUE;
         }
         
-        // Use the available qualities we determined above
-        List<SubtitleDTO> availableSubtitles = getMovieSubtitles(request.getMovieId());
-        
-        Optional<WatchHistory> watchHistory = (userId != null)
-                ? watchHistoryRepository.findByUserAndMovie(userRepository.findById(userId).orElse(null), movie)
+        Optional<WatchHistory> watchHistory = (user != null)
+                ? watchHistoryRepository.findByUserAndMovie(user, movie)
                 : Optional.empty();
 
         Integer currentPosition = watchHistory.map(WatchHistory::getWatchDurationSeconds).orElse(0);
@@ -533,16 +518,16 @@ public class UserFeatureServiceImpl implements UserFeatureService {
                 .movieId(movie.getId())
                 .title(movie.getTitle())
                 .streamingUrl(streamingUrl)
-                .streamUrl(streamingUrl) // Alternative field name
+                .streamUrl(streamingUrl)
                 .quality(chosenQuality)
                 .subtitleUrl(subtitleUrl)
-                .subtitleLanguage(request.getSubtitleLanguage())
-                .currentSubtitleLanguage(request.getSubtitleLanguage())
-                .subtitleEnabled(request.getSubtitleEnabled())
+                .subtitleLanguage(subtitleLanguage)
+                .currentSubtitleLanguage(subtitleLanguage)
+                .subtitleEnabled(subtitleEnabled)
                 .totalDuration(movie.getVideoDuration())
                 .availableQualities(availableQualities)
                 .availableSubtitles(availableSubtitles)
-                .subtitles(availableSubtitles) // Alternative field name
+                .subtitles(availableSubtitles)
                 .canDownload(movie.getDownloadEnabled())
                 .downloadUrl(movie.getDownloadEnabled() ? getDownloadUrl(movie, chosenQuality) : null)
                 .maxDownloadQuality(movie.getMaxDownloadQuality())
@@ -908,6 +893,12 @@ public class UserFeatureServiceImpl implements UserFeatureService {
     private String getStreamingUrl(Movie movie, String quality) {
         log.info("Getting streaming URL for movie {} with quality {}", movie.getId(), quality);
         
+        String directUrl = normalizeStoredVideoPath(movie.getVideoUrl(), movie.getId());
+        if (directUrl != null) {
+            log.info("Using original video URL for movie {}: {}", movie.getId(), directUrl);
+            return directUrl;
+        }
+        
         // Special handling for movie ID 19
         if (movie.getId() == 19) {
             String url = "/api/videos/stream/19/19_" + quality + ".mp4";
@@ -931,22 +922,13 @@ public class UserFeatureServiceImpl implements UserFeatureService {
             return url;
         }
 
-        // Try filesystem-based URL before falling back to original
+        // Try filesystem-based URL before falling back to null
         String expectedFile = movie.getId() + "_" + quality + ".mp4";
         Path expectedPath = Paths.get("uploads", "videos", String.valueOf(movie.getId()), expectedFile);
         if (Files.exists(expectedPath)) {
             String url = "/api/videos/stream/" + movie.getId() + "/" + expectedFile;
             log.info("Using filesystem-detected URL for quality {}: {}", quality, url);
             return url;
-        }
-
-        // Fallback to original video URL if no resolution found and file not present
-        if (movie.getVideoUrl() != null && !movie.getVideoUrl().isEmpty()) {
-            String videoUrl = movie.getVideoUrl();
-            String filename = videoUrl.contains("/") ? videoUrl.substring(videoUrl.lastIndexOf("/") + 1) : videoUrl;
-            String fallbackUrl = "/api/videos/stream/" + filename;
-            log.info("Using fallback video URL: {}", fallbackUrl);
-            return fallbackUrl;
         }
 
         log.warn("No streaming URL found for movie {} with quality {}", movie.getId(), quality);
@@ -961,10 +943,88 @@ public class UserFeatureServiceImpl implements UserFeatureService {
             return videoResolution.get().getVideoUrl();
         }
 
-        if (movie.getVideoUrl() == null || movie.getVideoUrl().isEmpty()) return null;
-        String videoUrl = movie.getVideoUrl();
-        String filename = videoUrl.contains("/") ? videoUrl.substring(videoUrl.lastIndexOf("/") + 1) : videoUrl;
-        return "/api/videos/stream/" + filename;
+        return normalizeStoredVideoPath(movie.getVideoUrl(), movie.getId());
+    }
+
+    private String normalizeStoredVideoPath(String storedUrl, Long movieId) {
+        if (storedUrl == null || storedUrl.isBlank()) {
+            return null;
+        }
+        String normalized = storedUrl.replace("\\", "/").trim();
+        if (normalized.startsWith("http://") || normalized.startsWith("https://")) {
+            return normalized;
+        }
+        if (normalized.startsWith("/api/")) {
+            return normalized;
+        }
+        if (normalized.startsWith("uploads/")) {
+            normalized = normalized.substring("uploads/".length());
+        }
+        if (normalized.startsWith("/")) {
+            normalized = normalized.substring(1);
+        }
+        if (normalized.startsWith("videos/")) {
+            normalized = normalized.substring("videos/".length());
+        }
+        if (normalized.isBlank()) {
+            return null;
+        }
+        if (normalized.contains("/")) {
+            return "/api/videos/stream/" + normalized;
+        }
+        if (movieId != null) {
+            return "/api/videos/stream/" + movieId + "/" + normalized;
+        }
+        return "/api/videos/stream/" + normalized;
+    }
+
+    private List<String> resolveAvailableQualities(Movie movie) {
+        List<String> qualities = new ArrayList<>(getAvailableQualitiesByMovieId(movie.getId()));
+        if (!qualities.isEmpty()) {
+            return qualities;
+        }
+        if (movie.getAvailableQualities() != null && !movie.getAvailableQualities().isEmpty()) {
+            return new ArrayList<>(movie.getAvailableQualities());
+        }
+        if (movie.getVideoQuality() != null && !movie.getVideoQuality().isBlank()) {
+            return new ArrayList<>(List.of(movie.getVideoQuality()));
+        }
+        return new ArrayList<>(List.of("original"));
+    }
+
+    private String resolveRequestedQuality(List<String> availableQualities, String requestedQuality) {
+        if (requestedQuality != null && !requestedQuality.isBlank() && availableQualities.contains(requestedQuality)) {
+            return requestedQuality;
+        }
+        if (!availableQualities.isEmpty()) {
+            return availableQualities.get(0);
+        }
+        return "original";
+    }
+
+    private String resolveSubtitleLanguage(String requestedLanguage, List<SubtitleDTO> subtitles) {
+        if (requestedLanguage != null && !requestedLanguage.isBlank()) {
+            return requestedLanguage;
+        }
+        return subtitles.stream()
+                .filter(SubtitleDTO::getIsDefault)
+                .map(SubtitleDTO::getLanguageCode)
+                .findFirst()
+                .orElseGet(() -> subtitles.stream()
+                        .map(SubtitleDTO::getLanguageCode)
+                        .findFirst()
+                        .orElse(null));
+    }
+
+    private String resolveSubtitleUrl(String languageCode, List<SubtitleDTO> subtitles) {
+        if (languageCode == null || languageCode.isBlank()) {
+            return null;
+        }
+        return subtitles.stream()
+                .filter(dto -> dto.getLanguageCode().equalsIgnoreCase(languageCode))
+                .map(SubtitleDTO::getSubtitleUrl)
+                .findFirst()
+                .orElse(null);
     }
 
     private UserProfileDTO convertToUserProfileDTO(User user) {
@@ -1034,11 +1094,19 @@ public class UserFeatureServiceImpl implements UserFeatureService {
     }
 
     private SubtitleDTO convertToSubtitleDTO(Subtitle subtitle) {
+        String subtitleUrl = subtitle.getSubtitleUrl();
+        String format = null;
+        if (subtitleUrl != null && subtitleUrl.contains(".")) {
+            format = subtitleUrl.substring(subtitleUrl.lastIndexOf(".") + 1).toLowerCase();
+        }
         return SubtitleDTO.builder()
                 .id(subtitle.getId())
+                .language(subtitle.getLanguageName())
                 .languageCode(subtitle.getLanguageCode())
                 .languageName(subtitle.getLanguageName())
-                .subtitleUrl(subtitle.getSubtitleUrl())
+                .url(subtitleUrl)
+                .subtitleUrl(subtitleUrl)
+                .format(format)
                 .isDefault(subtitle.getIsDefault())
                 .isAutoGenerated(subtitle.getIsAutoGenerated())
                 .encoding(subtitle.getEncoding())
@@ -1061,6 +1129,7 @@ public class UserFeatureServiceImpl implements UserFeatureService {
                 .averageRating(movie.getAverageRating())
                 .viewCount(movie.getViewCount())
                 .posterUrl(movie.getPosterUrl())
+                .thumbnailUrl(movie.getThumbnailUrl())
                 .trailerUrl(movie.getTrailerUrl())
                 .isFeatured(movie.getIsFeatured())
                 .isTrending(movie.getIsTrending())
